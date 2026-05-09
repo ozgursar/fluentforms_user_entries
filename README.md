@@ -19,11 +19,11 @@ A WordPress plugin that gives each logged-in user one persistent entry per Fluen
 
 The plugin hooks into FluentForms at four points:
 
-| Hook | Purpose |
-|---|---|
-| `do_shortcode_tag` | Replaces form output with a login message for guests |
-| `fluentform/validation_errors` | Blocks guest submissions at the server level |
-| `fluentform/rendering_form` | Injects prior submission values as field defaults before render |
+| Hook                             | Purpose                                                                                             |
+| -------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `do_shortcode_tag`               | Replaces form output with a login message for guests                                                |
+| `fluentform/validation_errors`   | Blocks guest submissions at the server level                                                        |
+| `fluentform/rendering_form`      | Injects prior submission values as field defaults before render                                     |
 | `fluentform/submission_inserted` | After a new row is inserted, copies its data onto the user's existing row and deletes the duplicate |
 
 No FluentForms core files are modified.
@@ -42,25 +42,11 @@ No FluentForms core files are modified.
 
 That's it. Users who visit the page will see an empty form on first visit. On every subsequent visit the form will be prefilled with their last submission.
 
-## Plugin Structure
-
-```
-fluentforms-user-entries/
-├── fluentforms-user-entries.php          # Plugin entry point, constants, bootstrap
-├── includes/
-│   └── class-fluentforms-user-entries.php  # Singleton — all hook logic lives here
-└── assets/
-    ├── css/                              # Front-end styles (added as needed)
-    └── js/                               # Front-end scripts (added as needed)
-```
-
 ## Security
 
 This plugin follows WordPress coding standards and Fluent Forms' security model. It does not bypass or duplicate Fluent Forms' own input validation and nonce verification.
 
 ## Development Notes
 
-- **Asset versioning** — when enqueuing CSS/JS use `filemtime()` for the version argument rather than a hardcoded constant.
-- **Constants prefix** — all plugin constants use the `FFUE_` prefix (`FFUE_PLUGIN_FILE`, `FFUE_PLUGIN_DIR`, `FFUE_PLUGIN_URL`).
 - **Coding standard** — WordPress Coding Standards enforced via PHPCS/PHPCBF.
 - **No history** — the plugin deliberately keeps only the most recent submission per user per form. If history tracking is ever needed it will require a schema change.
