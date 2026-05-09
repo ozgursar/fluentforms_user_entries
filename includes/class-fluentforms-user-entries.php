@@ -96,9 +96,12 @@ class FluentForms_User_Entries {
 				'updated_at' => current_time( 'mysql' ),
 				'status'     => 'unread',
 			),
-			array( 'id' => $prior->id ),
+			array(
+				'id'      => $prior->id,
+				'user_id' => get_current_user_id(),
+			),
 			array( '%s', '%s', '%s' ),
-			array( '%d' )
+			array( '%d', '%d' )
 		);
 
 		$wpdb->delete( $table, array( 'id' => $insert_id ), array( '%d' ) );

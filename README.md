@@ -54,6 +54,10 @@ fluentforms-user-entries/
     └── js/                               # Front-end scripts (added as needed)
 ```
 
+## Security
+
+This plugin follows WordPress coding standards and Fluent Forms' security model. It does not bypass or duplicate Fluent Forms' own input validation and nonce verification.
+
 ## Development Notes
 
 - **Asset versioning** — when enqueuing CSS/JS use `filemtime()` for the version argument rather than a hardcoded constant.
