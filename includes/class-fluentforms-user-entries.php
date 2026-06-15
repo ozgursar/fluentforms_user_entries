@@ -26,7 +26,7 @@ class FluentForms_User_Entries {
 	}
 
 	public function maybe_hide_form_from_guests( $output, $tag, $attr ) {
-		if ( 'fluentform' !== $tag || is_user_logged_in() ) {
+		if ( 'fluentform' !== $tag || is_user_logged_in() || $this->is_excluded_form( $attr['id'] ?? 0 ) ) {
 			return $output;
 		}
 
@@ -34,7 +34,7 @@ class FluentForms_User_Entries {
 	}
 
 	public function block_guest_submission( $errors, $form_data, $form, $fields ) {
-		if ( is_user_logged_in() ) {
+		if ( is_user_logged_in() || $this->is_excluded_form( $form->id ) ) {
 			return $errors;
 		}
 
@@ -44,7 +44,7 @@ class FluentForms_User_Entries {
 	}
 
 	public function maybe_prefill_form( $form ) {
-		if ( ! is_user_logged_in() ) {
+		if ( ! is_user_logged_in() || $this->is_excluded_form( $form->id ) ) {
 			return $form;
 		}
 
@@ -72,7 +72,7 @@ class FluentForms_User_Entries {
 	}
 
 	public function maybe_replace_prior_submission( $insert_id, $form_data, $form ) {
-		if ( ! is_user_logged_in() ) {
+		if ( ! is_user_logged_in() || $this->is_excluded_form( $form->id ) ) {
 			return;
 		}
 
@@ -108,6 +108,10 @@ class FluentForms_User_Entries {
 	}
 
 	public function redirect_to_same_page( $confirmation, $form_data, $form ) {
+		if ( $this->is_excluded_form( $form->id ) ) {
+			return $confirmation;
+		}
+
 		$referer = wp_get_referer();
 
 		if ( $referer ) {
@@ -119,7 +123,7 @@ class FluentForms_User_Entries {
 	}
 
 	public function maybe_show_saved_notice( $output, $tag, $attr ) {
-		if ( 'fluentform' !== $tag || ! is_user_logged_in() || empty( $_GET['ffue_saved'] ) || empty( $attr['id'] ) || (int) $_GET['ffue_saved'] !== (int) $attr['id'] ) {
+		if ( 'fluentform' !== $tag || ! is_user_logged_in() || empty( $_GET['ffue_saved'] ) || empty( $attr['id'] ) || (int) $_GET['ffue_saved'] !== (int) $attr['id'] || $this->is_excluded_form( $attr['id'] ) ) {
 			return $output;
 		}
 
@@ -179,6 +183,10 @@ class FluentForms_User_Entries {
 
 		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		return $wpdb->get_row( $wpdb->prepare( "SELECT id, response FROM {$table} WHERE form_id = %d AND user_id = %d ORDER BY created_at DESC LIMIT 1", $form_id, $user_id ) );
+	}
+
+	private function is_excluded_form( $form_id ) {
+		return in_array( (int) $form_id, FFUE_EXCLUDED_FORM_IDS, true );
 	}
 
 	private function __clone() {}
